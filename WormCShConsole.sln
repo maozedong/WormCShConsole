@@ -1,0 +1,38 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WormCShConsole", "WormCShConsole\WormCShConsole.csproj", "{347D9490-F4BA-42C8-B486-028E5AEB070D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeleteControlBytes", "ConsoleApplication1\DeleteControlBytes.csproj", "{02FCCD95-C596-4B95-B4B6-924125D4CFB6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeleteZeros", "DeleteZeros\DeleteZeros.csproj", "{012D9631-4BAF-40E4-A522-FBBCDFC6811E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WriteToDevice", "WriteToDevice\WriteToDevice.csproj", "{410327B9-B475-4ECA-B33A-4F30CBC9C402}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{347D9490-F4BA-42C8-B486-028E5AEB070D}.Debug|x86.ActiveCfg = Debug|x86
+		{347D9490-F4BA-42C8-B486-028E5AEB070D}.Debug|x86.Build.0 = Debug|x86
+		{347D9490-F4BA-42C8-B486-028E5AEB070D}.Release|x86.ActiveCfg = Release|x86
+		{347D9490-F4BA-42C8-B486-028E5AEB070D}.Release|x86.Build.0 = Release|x86
+		{02FCCD95-C596-4B95-B4B6-924125D4CFB6}.Debug|x86.ActiveCfg = Debug|x86
+		{02FCCD95-C596-4B95-B4B6-924125D4CFB6}.Debug|x86.Build.0 = Debug|x86
+		{02FCCD95-C596-4B95-B4B6-924125D4CFB6}.Release|x86.ActiveCfg = Release|x86
+		{02FCCD95-C596-4B95-B4B6-924125D4CFB6}.Release|x86.Build.0 = Release|x86
+		{012D9631-4BAF-40E4-A522-FBBCDFC6811E}.Debug|x86.ActiveCfg = Debug|x86
+		{012D9631-4BAF-40E4-A522-FBBCDFC6811E}.Debug|x86.Build.0 = Debug|x86
+		{012D9631-4BAF-40E4-A522-FBBCDFC6811E}.Release|x86.ActiveCfg = Release|x86
+		{012D9631-4BAF-40E4-A522-FBBCDFC6811E}.Release|x86.Build.0 = Release|x86
+		{410327B9-B475-4ECA-B33A-4F30CBC9C402}.Debug|x86.ActiveCfg = Debug|x86
+		{410327B9-B475-4ECA-B33A-4F30CBC9C402}.Debug|x86.Build.0 = Debug|x86
+		{410327B9-B475-4ECA-B33A-4F30CBC9C402}.Release|x86.ActiveCfg = Release|x86
+		{410327B9-B475-4ECA-B33A-4F30CBC9C402}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
