@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Collections;
 
 namespace DeleteZeros
 {
@@ -20,87 +21,110 @@ namespace DeleteZeros
                     {
                         using (BinaryWriter bw = new BinaryWriter(copyStream))
                         {
-                            long position = 0;
+                            //seek for first non-zero position
+                            long position;
                             position = FirstNonZeroBytePosition(br);
-
                             br.BaseStream.Seek(position, SeekOrigin.Begin);
 
+                            long chunkCounter = 0;
+                            int chunkLenght = 0x100000;
+                            byte[] chunk;
+                            byte[] chunkOut;
+                            BitArray chunkBitsIn;
+                            BitArray chunkBitsOut;
+                            BitArray chunkBuffer = null;
+                            BitArray rawData;
+
+                            //delete zeros in first non-zero byte
+                            chunkBuffer = DeleteZerosInFirstByte(br, chunkBuffer);
+
+                            //begin loop
                             while ((chunk = br.ReadBytes(chunkLenght)).Length > 0)
                             {
-                                for (int i = 0; i < chunk.Length; i++)
+                                //interators
+                                int inIter = 0;
+                                int outIter = 0;
+                                int zeroCount = 0;
+
+                                rawData = new BitArray(chunk);
+                                chunkBitsIn = new BitArray(chunkBuffer);
+
+                                chunkBitsIn.Length += rawData.Length;
+                                for (int i = chunkBuffer.Length; i < chunkBitsIn.Length; i++)
                                 {
-                                    if (chunk[i] != 0)
+                                    chunkBitsIn[i] = rawData[i - chunkBuffer.Length];
+                                }
+                                chunkBitsOut = new BitArray(chunkBitsIn.Length, false);
+
+                                while (inIter < chunkBitsIn.Length)
+                                {
+                                    if (chunkBitsIn[inIter])
                                     {
-                                        byte b = chunk[i];
-                                        return br.BaseStream.Position - chunk.Length + i;
+                                        chunkBitsOut[outIter] = true;
+                                        outIter++;
+                                        inIter++;
+                                    }
+                                    else
+                                    {
+                                        zeroCount = 1;
+                                        while ((inIter + zeroCount) < chunkBitsIn.Length && !chunkBitsIn[inIter + zeroCount])
+                                            zeroCount++;
+
+                                        if (zeroCount <= 12 && (inIter + zeroCount) < chunkBitsIn.Length)
+                                            outIter += zeroCount;
+                                        if (zeroCount > 0x100)
+                                            Console.WriteLine("big zero, {0} mb", chunkCounter);
+                                        inIter += zeroCount;
                                     }
                                 }
+                                //add Chunk Buffer
+                                int lenghtToCopy = chunkBitsOut.Length / 8 * 8;
+                                chunkBuffer = new BitArray(chunkBitsIn.Length - lenghtToCopy);
+
+                                for (int i = 0; i < chunkBuffer.Length; i++)
+                                    chunkBuffer[i] = chunkBitsIn[i + lenghtToCopy];
+
+                                chunkBitsOut.Length = lenghtToCopy;
+                                chunkOut = new byte[lenghtToCopy / 8];
+                                chunkBitsOut.CopyTo(chunkOut, 0);
+                                bw.Write(chunkOut);
+
+                                chunkCounter++;
+                                Console.WriteLine("{0} Mb is read", chunkCounter);
                             }
 
-
-
-                            //List<byte> bList = new List<byte>();
-                            //for (int i = 0; i < chunk.Length; i++)
-                            //{
-                            //    if (chunk[i] != 0x00)
-                            //        bList.Add(chunk[i]);
-                            //}
-                            //var bChunk = bList.ToArray();
-                            //bw.Write(bChunk, 0, bChunk.Length);
-
-                            //while (br.BaseStream.Position < br.BaseStream.Length)
-                            //{
-                            //    sum = 0;
-                            //    //chunkCopy = chunk;
-                            //    chunk = br.ReadBytes(chunkLenght);
-                            //    foreach (byte b in chunk)
-                            //    {
-                            //        sum += b;
-                            //    }
-                            //    if (sum != 0x00)
-                            //    {
-                            //        bw.Write(chunk, 0, chunk.Length);
-                            //    }
-                            //    else
-                            //    {
-                            //        List<byte[]> bArrayList = new List<byte[]>();
-
-                            //        while ((sum == 0x00) && (br.BaseStream.Position < br.BaseStream.Length))
-                            //        {
-                            //            bArrayList.Add(chunk);
-                            //            chunk = br.ReadBytes(chunkLenght);
-                            //            foreach (byte b in chunk)
-                            //            {
-                            //                sum += b;
-                            //            }
-                            //        }
-                            //        if (br.BaseStream.Position < br.BaseStream.Length)
-                            //        {
-                            //            bArrayList.Add(chunk);
-                            //            foreach (var b in bArrayList)
-                            //            {
-                            //                bw.Write(b, 0, b.Length);
-                            //            }
-                            //        }
-                            //        //else
-                            //        //{
-                            //        //    List<byte> bList2 = new List<byte>();
-                            //        //    for (int i = 0; i < chunkCopy.Length; i++)
-                            //        //    {
-                            //        //        if (chunkCopy[i] != 0x00)
-                            //        //            bList.Add(chunkCopy[i]);
-                            //        //    }
-                            //        //    var bChunk2 = bList2.ToArray();
-                            //        //    bw.Write(bChunk2, 0, bChunk2.Length);
-                            //        //}                
-                            //    }
-                            //}
                             Console.WriteLine("End of file is riched!Zere aro no zeros any more!");
                             while (Console.KeyAvailable == false) { };
                         }
                     }
                 }
             }
+        }
+
+
+
+        private static BitArray DeleteZerosInFirstByte(BinaryReader br, BitArray chunkBuffer)
+        {
+            byte[] b = { 0xfc };
+            BitArray ba = new BitArray(b);
+            DisplayBits(ba);
+            while (Console.KeyAvailable == false) { };
+            int baZeroCount = 0;
+            while (!ba[baZeroCount])
+                baZeroCount++;
+            chunkBuffer = new BitArray(ba.Length - baZeroCount);
+            for (int i = baZeroCount; i < ba.Length; i++)
+                chunkBuffer[i - baZeroCount] = ba[i];
+            return chunkBuffer;
+        }
+
+        private static void DisplayBits(BitArray chunkBitsOut)
+        {
+            foreach (bool bit in chunkBitsOut)
+            {
+                Console.Write(bit ? 1 : 0);
+            }
+            Console.WriteLine();
         }
 
         private static long FirstNonZeroBytePosition(BinaryReader br)
