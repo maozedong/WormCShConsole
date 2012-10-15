@@ -105,7 +105,7 @@ namespace DeleteZeros
 
         private static BitArray DeleteZerosInFirstByte(BinaryReader br, BitArray chunkBuffer)
         {
-            byte[] b = { 0xfc };
+            byte[] b = { br.ReadByte() };
             BitArray ba = new BitArray(b);
             DisplayBits(ba);
             while (Console.KeyAvailable == false) { };
