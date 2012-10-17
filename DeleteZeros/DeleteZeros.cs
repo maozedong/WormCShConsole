@@ -25,7 +25,7 @@ namespace DeleteZeros
                             long position;
                             position = FirstNonZeroBytePosition(br);
                             br.BaseStream.Seek(position, SeekOrigin.Begin);
-
+  
                             long chunkCounter = 0;
                             int chunkLenght = 0x100000;
                             byte[] chunk;
@@ -77,12 +77,14 @@ namespace DeleteZeros
                                         inIter += zeroCount;
                                     }
                                 }
+                                chunkBitsOut.Length = outIter;
+
                                 //add Chunk Buffer
                                 int lenghtToCopy = chunkBitsOut.Length / 8 * 8;
-                                chunkBuffer = new BitArray(chunkBitsIn.Length - lenghtToCopy);
+                                chunkBuffer = new BitArray(chunkBitsOut.Length - lenghtToCopy);
 
                                 for (int i = 0; i < chunkBuffer.Length; i++)
-                                    chunkBuffer[i] = chunkBitsIn[i + lenghtToCopy];
+                                    chunkBuffer[i] = chunkBitsOut[i + lenghtToCopy];
 
                                 chunkBitsOut.Length = lenghtToCopy;
                                 chunkOut = new byte[lenghtToCopy / 8];
@@ -93,12 +95,15 @@ namespace DeleteZeros
                                 Console.WriteLine("{0} Mb is read", chunkCounter);
                             }
 
-                            Console.WriteLine("End of file is riched!Zere aro no zeros any more!");
-                            while (Console.KeyAvailable == false) { };
+                            chunkOut = new byte[1];
+                            chunkBuffer.CopyTo(chunkOut, 0);
+                            bw.Write(chunkOut);                           
                         }
                     }
                 }
             }
+            Console.WriteLine("End of file is riched!Zere aro no zeros any more!");
+            while (Console.KeyAvailable == false) { };
         }
 
 
@@ -107,10 +112,10 @@ namespace DeleteZeros
         {
             byte[] b = { br.ReadByte() };
             BitArray ba = new BitArray(b);
-            DisplayBits(ba);
-            while (Console.KeyAvailable == false) { };
+            //DisplayBits(ba);
+            //while(Console.KeyAvailable == false){}
             int baZeroCount = 0;
-            while (!ba[baZeroCount])
+            while (baZeroCount<ba.Length && !ba[baZeroCount])
                 baZeroCount++;
             chunkBuffer = new BitArray(ba.Length - baZeroCount);
             for (int i = baZeroCount; i < ba.Length; i++)
